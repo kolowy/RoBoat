@@ -1,6 +1,6 @@
 cc = ocamlfind ocamlc
 api = ${wildcard api/*.ml}
-cmo = ${pathsubst %.ml,%.cmo,$(api)}
+cmo = ${patsubst %.ml,%.cmo,$(api)}
 
 packages = lwt cohttp cohttp-lwt-unix
 
