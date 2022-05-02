@@ -1,40 +1,38 @@
 cc = ocamlfind ocamlc
-api = ${wildcard api/*.ml}
-cmo = ${patsubst %.ml,%.cmo,$(api)}
+
+modules = api
 debug = ${wildcard debug/*.ml}
-cmodebug = ${patsubst %.ml,%.cmo,$(debug)}
+debugcmo = ${patsubst %.ml,%.cmo,$(debug)}
+
+files = ${foreach d,$(modules),$(wildcard $(d)/*.ml)}
+cmo = ${patsubst %.ml,%.cmo,$(files)} 
+trash = ${patsubst %.ml,%.cmi,$(files)}
 
 packages = cohttp cohttp-lwt cohttp-lwt-unix graphics
 
 flags = -thread -linkpkg
-main = main
+out = main.exe
 
-exe = ./
-out = ${main}.exe
-rm = rm -f ${out} *.cmi *.cmo
+rm = rm -f ${out} ${cmo} ${trash}
 
-main: run clean
+main: compile run clean
 
-compile:
-	${cc} -c ${foreach p,$(packages),-package $(p)} ${api} ${flags}
-	${cc} ${foreach p,$(packages),-package $(p)} ${cmo} -o ${out} ${flags}
+debug: compile_debug run clean_debug
 
 compile_debug:
-	${cc} -c ${foreach p,$(packages),-package $(p)} ${debug} ${flags}
-	${cc} ${foreach p,$(packages),-package $(p)} ${cmodebug} -o ${out} ${flags}
+	${cc} -c ${foreach p,$(packages),-package $(p)} ${files} ${debug} ${flags}
+	${cc} ${foreach p,$(packages),-package $(p)} ${cmo} ${debugcmo} ${flags} -o ${out}
 
 
-run: compile
-	${exe}${out}
+compile:
+	${cc} -c ${foreach p,$(packages),-package $(p)} ${files} ${flags}
+	${cc} ${foreach p,$(packages),-package $(p)} ${cmo} ${flags} -o ${out}
 
-debug: compile_debug
-	${exe}${out}
+run:
+	./${out}
+
+clean_debug:
+	${rm} ${patsubst %.ml,%.cmo,$(debug)} ${patsubst %.ml,%.cmi,$(debug)}
 
 clean:
 	${rm}
-
-
-# marking end of file can avoid problems
-# make parsing strategy if your editor doesn't
-# close the line for you.
-# END
