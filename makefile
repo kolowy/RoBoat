@@ -1,8 +1,10 @@
 cc = ocamlfind ocamlc
 api = ${wildcard api/*.ml}
 cmo = ${patsubst %.ml,%.cmo,$(api)}
+debug = ${wildcard debug/*.ml}
+cmodebug = ${patsubst %.ml,%.cmo,$(debug)}
 
-packages = cohttp cohttp-lwt cohttp-lwt-unix
+packages = cohttp cohttp-lwt cohttp-lwt-unix graphics
 
 flags = -thread -linkpkg
 main = main
@@ -17,7 +19,15 @@ compile:
 	${cc} -c ${foreach p,$(packages),-package $(p)} ${api} ${flags}
 	${cc} ${foreach p,$(packages),-package $(p)} ${cmo} -o ${out} ${flags}
 
+compile_debug:
+	${cc} -c ${foreach p,$(packages),-package $(p)} ${debug} ${flags}
+	${cc} ${foreach p,$(packages),-package $(p)} ${cmodebug} -o ${out} ${flags}
+
+
 run: compile
+	${exe}${out}
+
+debug: compile_debug
 	${exe}${out}
 
 clean:
