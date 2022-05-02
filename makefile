@@ -1,5 +1,8 @@
-cc = ocamlc
+cc = ocamlfind ocamlc
 api = ${wildcard api/*.ml}
+cmo = ${pathsubst %.ml,%.cmo,$(api)}
+
+packages = lwt cohttp cohttp-lwt-unix
 
 flags = -o
 main = main
@@ -11,7 +14,8 @@ rm = rm -f ${out} *.cmi *.cmo
 main: run clean
 
 compile:
-	${cc} ${api} ${flags} ${out}
+	${cc} -c ${foreach p,$(packages),-package $(p)} ${api}
+	${cc} ${foreach p,$(packages),-package $(p)} ${cmo} -o ${out}
 
 run: compile
 	${exe}${out}
