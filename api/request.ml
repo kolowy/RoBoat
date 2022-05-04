@@ -84,10 +84,6 @@ let infoSlow =
     ) in
     print_endline ("Received body\n" ^ body) ;;
 
-let wait milli =
-    let sec = milli /. 1000. in
-    let tm1 = Unix.gettimeofday () in
-    while Unix.gettimeofday () -. tm1 < sec do () done ; 
 
 
 
