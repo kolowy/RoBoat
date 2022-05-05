@@ -5,6 +5,10 @@ open Cohttp_lwt_unix
 let token = ref "";;
 
 
+(* post request :
+    url : url
+    content : content to post
+    return (body, headers, status code) *)
 let reqBody url content = 
     let uri = Uri.of_string url in
     let headers = Header.init ()
@@ -16,6 +20,11 @@ let reqBody url content =
         body |> Cohttp_lwt.Body.to_string >|= fun body ->
             (body, resp |> Response.headers |> Header.to_list, code);; 
 
+
+
+(* load a file : 
+    name : name of the file
+    return all the file *)
 let load name =
     let ic = open_in name in
     let try_read () =
@@ -25,6 +34,9 @@ let load name =
         | None -> ""
     in loop () ;;
 
+
+(* login function
+    change the token send to request *)
 let login =
     let content = load "api/login.config" in
     let (_, resp, _) = Lwt_main.run (reqBody
@@ -39,7 +51,9 @@ let login =
         token := (loop resp);;
 
 
-
+(* get request while (403) ; login ; recursif  :
+    url : url
+    return the body of the request *)
 let rec getData url =
     let headers = Header.init ()
         |> fun h -> Header.add h "Token" !token
@@ -58,7 +72,7 @@ let rec getData url =
 (* dès que julie a fait marché dune :eyes *)
 
 
-
+(* get the infoSlow data *)
 let infoSlow =
     let body = Lwt_main.run (getData
         "https://roboats.virtualregatta.com/api/infos/slow"
@@ -66,8 +80,6 @@ let infoSlow =
     print_endline ("Received body\n" ^ body) ;;
 
 
-let () =
-    infoSlow ;;
     (*let content = load "api/login.config" in
     let (body, resp, code) = Lwt_main.run (reqBody
     "https://roboats.virtualregatta.com/api/login"
