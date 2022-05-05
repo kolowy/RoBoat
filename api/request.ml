@@ -45,7 +45,7 @@ let login =
     ) in
     let rec loop = function
         | [] -> ""
-        | ("Token", token)::_ -> token 
+        | ("Token", token)::_ | ("token", token)::_ -> token 
         | (_, _)::tail -> loop tail
     in
         token := (loop resp);;
