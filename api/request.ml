@@ -27,13 +27,13 @@ let load name =
 
 let login =
     let content = load "api/login.config" in
-    let (body, resp, code) = Lwt_main.run (reqBody
+    let (_, resp, _) = Lwt_main.run (reqBody
         "https://roboats.virtualregatta.com/api/login"
         content
     ) in
     let rec loop = function
         | [] -> ""
-        | ("Token", token)::tail -> token 
+        | ("Token", token)::_ -> token 
         | (_, _)::tail -> loop tail
     in
         token := (loop resp);;
@@ -54,25 +54,6 @@ let rec getData url =
 
 
 
-(*let () =
-    let content = load "api/login.config" in
-    let (body, resp, code) = Lwt_main.run (reqBody
-    "https://roboats.virtualregatta.com/api/login"
-    content
-    ) in
-    print_string ("Error Code : ") ;
-    print_int(code); print_newline () ;
-    let rec join = function
-        | [] -> ""
-        | (str1, str2)::tail -> str1 ^ ":" ^ str2 ^ "\n" ^join tail in
-    
-    print_endline ("Received body\n" ^ body) ;
-    print_endline ("Received header\n" ^ (join resp)) ;;
-*)
-
-
-
-
 (* a fouttre dans un autre ficher svp *)
 (* dès que julie a fait marché dune :eyes *)
 
@@ -85,5 +66,20 @@ let infoSlow =
     print_endline ("Received body\n" ^ body) ;;
 
 
+let () =
+    infoSlow ;;
+    (*let content = load "api/login.config" in
+    let (body, resp, code) = Lwt_main.run (reqBody
+    "https://roboats.virtualregatta.com/api/login"
+    content
+    ) in
+    print_string ("Error Code : ") ;
+    print_int(code); print_newline () ;
+    let rec join = function
+        | [] -> ""
+        | (str1, str2)::tail -> str1 ^ ":" ^ str2 ^ "\n" ^join tail in
+    
+    print_endline ("Received body\n" ^ body) ;
+    print_endline ("Received header\n" ^ (join resp)) ;;*)
 
 
