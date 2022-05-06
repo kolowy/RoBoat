@@ -1,3 +1,9 @@
 (library
-  (name request)
-  (libraries cohttp cohttp-lwt cohttp-lwt-unix))
+ (name login)
+ (modules login)
+ (libraries cohttp cohttp-lwt cohttp-lwt-unix))
+
+ (library
+ (name request)
+ (modules request)
+ (libraries cohttp cohttp-lwt cohttp-lwt-unix login))
