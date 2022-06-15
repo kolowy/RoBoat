@@ -1,6 +1,12 @@
 (executable
   (name main)
+  (modules main)
   (libraries request))
+
+(executable
+  (name debug)
+  (modules debug)
+  (libraries interface))
 
 (env
   (dev
