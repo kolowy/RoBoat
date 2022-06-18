@@ -1,10 +1,16 @@
+Random.self_init ();;
+
 (*
     Initialise random bias and weight values
 
     param n: number of weights (int)
     returns: a tuple with the bias (float) and the weights (float list)
     *)
-let init n = (0.0, [0.0])
+let init n =
+    let rec loop i = match i with
+        | 0 -> []
+        | _ -> (Random.float 1.0)::loop (i-1)
+    in (Random.float 1.0, loop n);;
 
 (*
     Predict values using y = b + w1*d1 + w2*d2 ...
@@ -16,7 +22,13 @@ let init n = (0.0, [0.0])
     param w: weights, must be same length as data (float list)
     returns: the expected value of y (float)
     *)
-let predict b x w = 0.0;;
+let predict b x w =
+    let rec loop x w = match x, w with
+        | ([], []) -> 0.0
+        | ([], _) | (_, []) -> 
+                invalid_arg "data and weights must be the same length"
+        | (v::x, e::w) -> v *. e +. loop x w
+    in b +. loop x w;;
 
 (*
     Calculates the cost of current prediction
