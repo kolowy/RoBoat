@@ -81,26 +81,3 @@ let rec putData url content =
             | _ -> body |> Cohttp_lwt.Body.to_string >|= fun body -> body ;;
 
 
-
-
-
-(* a fouttre dans un autre ficher svp *)
-(* dès que julie a fait marché dune :eyes *)
-
-
-
-    (*let content = load "api/login.config" in
-    let (body, resp, code) = Lwt_main.run (reqBody
-    "https://roboats.virtualregatta.com/api/login"
-    content
-    ) in
-    print_string ("Error Code : ") ;
-    print_int(code); print_newline () ;
-    let rec join = function
-        | [] -> ""
-        | (str1, str2)::tail -> str1 ^ ":" ^ str2 ^ "\n" ^join tail in
-    
-    print_endline ("Received body\n" ^ body) ;
-    print_endline ("Received header\n" ^ (join resp)) ;;*)
-
-
