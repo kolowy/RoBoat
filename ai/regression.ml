@@ -33,11 +33,21 @@ let predict b x w =
 (*
     Calculates the cost of current prediction
 
-    param y: current value (float)
-    param yp: predicted value (float)
+    param y: current set of value (float list)
+    param yp: set of predicted value. 
+        Must be same length as y (float list)
     returns: the cost of the predicted value (float)
     *)
-let cost y yp = 0.0;;
+let cost y yp = 
+    let rec dot y yp = match (y, yp) with
+        | ([], []) -> (0.0, 0.0)
+        | ([], _) | (_, []) ->
+                invalid_arg "y and yp must be of same length"
+        | (e1::y, e2::yp) ->
+                let (d, l) = dot y yp in
+                ((e1 -. e2) *. (e1 -. e2) +. d, l +. 1.0)
+    in let (dp, len) = dot y yp in
+        dp /. len;;
 
 (*
     Update bias and weigths to reduce cost
