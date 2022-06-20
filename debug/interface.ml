@@ -39,6 +39,7 @@ let draw_graph range =
 let add_data x y range = 
     let (rx, ry) = range in
     let size = 760.0 /. float_of_int ry in
+    set_color blue;
     fill_circle (20 + int_of_float (x *. size)) 
         (20 + int_of_float (y *. size)) 5;;
 
@@ -52,6 +53,7 @@ let draw_predict b w range =
     let (x, y) = range in
     let size = 760.0 /. float_of_int y in
     let py = b +. w *. float_of_int x in
+    set_color red;
     moveto 20 (20 + int_of_float (b *. size));
     lineto (20 + int_of_float (size *. py)) 
         (20 + int_of_float (float_of_int x *. size));;
