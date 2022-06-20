@@ -1,10 +1,9 @@
 open Interface;;
 open Regression;;
 
-let (b, w) = init 1;;
-
 let data_x = [1.0; 2.5; 4.0; 3.0; 5.0];;
 let data_y = [1.0; 3.0; 3.4; 2.0; 5.0];;
+let x = [[1.0]; [2.5]; [4.0]; [3.0]; [5.0]];;
 
 window();;
 
@@ -16,6 +15,8 @@ let rec plot_data x y = match (x, y) with
     | (ex::x, ey::y) -> add_data ex ey range; plot_data x y;;
 
 plot_data data_x data_y;;
+
+let (b, w) = gradient_descent x data_y 1 0.01 10;;
 
 let a = match w with
     | [] -> 0.0
