@@ -18,7 +18,7 @@ let init n =
         w1, w2 the weights of the according data
 
     param b: bias (float)
-    param x: data (float list)
+    param x: data. correspond to a line in the data matrix (float list)
     param w: weights, must be same length as data (float list)
     returns: the expected value of y (float)
     *)
@@ -34,7 +34,8 @@ let predict b x w =
     Predict all values using the predict function
 
     param b: bias (float)
-    param x: entry data of each dot (float list list)
+    param x: list of data line by line. 
+        each float in the list is a different data (float list list)
     param w: weights, must be same length as data (float list)
     returns: each expected value (float list)
     *)
@@ -64,7 +65,8 @@ let cost y yp =
 (*
     Update bias and weigths to reduce cost
 
-    param x: input for prediction (float list)
+    param x: input for prediction. 
+        each list correspond to 1 data (float list list)
     param y: real result. Must be of same length as x (float)
     param yp: predicted result. Must be of same length as x (float)
     param b: bias (float)
@@ -77,25 +79,31 @@ let update_weight x y yp b w lr =
         | [] -> 0.0
         | e::l -> e *. dy +. dot_p l dy
     in
-    let rec get_vals x y yp = match (x, y, yp) with
-        | ([], [], []) -> (0.0, 0.0, 0.0)
-        | (_, [], []) | ([], _, []) | ([], [], _) 
-        | (_, _, []) | (_, [], _) | ([], _, _)->
-                invalid_arg "x, y and yp must be of same lenght"
-        | (e::x, o::y, op::yp) ->
-                let (s, d, l) = get_vals x y yp and diff = o -. op in
-                (s +. diff, d +. diff *. dot_p e diff, l +. 1.0)
-     in let (sum, dot, len) = get_vals x y yp in
-     let db = sum *. 2.0 /. len and dw = dot *. 2.0 /. len in
-     let rec apply w = match w with
-        | [] -> []
-        | e::l -> (e -. lr *. dw)::apply l
-     in (b -. lr *. db, apply w);;
+    let rec get_vals y yp = match (y, yp) with
+        | ([], []) -> (0.0, [], 0.0)
+        | (_, []) | ([], _) ->
+                invalid_arg "y and yp must be of same length"
+        | (o::y, op::yp) ->
+                let (s, d, l) = get_vals y yp and diff = o -. op in
+                (s +. diff, diff::d, l +. 1.0)
+    in let (sum, diffs, len) = get_vals y yp in
+    let rec get_weights x diffs = match (x, diffs) with
+        | ([], []) -> []
+        | ([], _) | (_, []) ->
+                invalid_arg "x and y must be of same length"
+        | (e::x, d::diffs) -> (dot_p e d *. 2.0 /. len)::get_weights x diffs
+    in
+    let db = sum *. 2.0 /. len and dw = get_weights x diffs in
+    let rec apply w dw = match (w, dw) with
+        | ([], _) | (_, []) -> []
+        | (e::w, d::dw) -> (e -. lr *. d)::apply w dw
+    in (b -. lr *. db, apply w dw);;
+
 
 (*
     Run the Gradient descent algorithm
     
-    param x: list of all entries for each data (float list list)
+    param x: list of entry data. each list is a different data (float list list)
     param y: list of all example values in data (float list)
     param n: number of entries for each value (int)
     param alpha: learning rate: update step for weight values (float)
