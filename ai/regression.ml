@@ -105,16 +105,18 @@ let update_weight x y yp b w lr =
     
     param x: list of entry data. each list is a different data (float list list)
     param y: list of all example values in data (float list)
-    param n: number of entries for each value (int)
     param alpha: learning rate: update step for weight values (float)
     param it: number of iterations (int)
     returns: a tuple the final bias (float) and weights (float list)
     *)
-let gradient_descent x y n alpha it =
-    let (b, w) = init n in
+let gradient_descent x y alpha it =
+    let rec len l = match l with
+        | [] -> 0
+        | _::l -> len l + 1 
+    in let (b, w) = init (len x) in
     let rec loop it = match it with
         | 0 -> (b, w)
         | it -> let (b, w) = loop (it - 1) in
-            let yp = predict_y b x w in
+            let yp = predict_y b (get_entries x (len y)) w in
             update_weight x y yp b w alpha
     in loop it;;
