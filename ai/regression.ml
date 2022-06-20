@@ -65,14 +65,28 @@ let cost y yp =
     Update bias and weigths to reduce cost
 
     param x: input for prediction (float list)
-    param y: real result (float)
-    param yp: predicted result (float)
+    param y: real result. Must be of same length as x (float)
+    param yp: predicted result. Must be of same length as x (float)
     param b: bias (float)
     param w: weights (float list)
     param lr: learning rate: update step (float)
     returns: a tuple with the new bias (float) and the new weights (float list)
     *)
-let update_weight x y yp b w lr = (0.0, [0.0]);;
+let update_weight x y yp b w lr =
+    let rec get_vals x y yp = match (x, y, yp) with
+        | ([], [], []) -> (0.0, 0.0, 0.0)
+        | (_, [], []) | ([], _, []) | ([], [], _) 
+        | (_, _, []) | (_, [], _) | ([], _, _)->
+                invalid_arg "x, y and yp must be of same lenght"
+        | (e::x, o::y, op::yp) ->
+                let (s, d, l) = get_vals x y yp and diff = o -. op in
+                (s +. diff, d +. diff *. e, l +. 1.0)
+     in let (sum, dot, len) = get_vals x y yp in
+     let db = sum *. 2.0 /. len and dw = dot *. 2.0 /. len in
+     let rec apply w = match w with
+        | [] -> []
+        | e::l -> (e -. lr *. dw)::apply l
+     in (b -. lr *. db, apply w);;
 
 (*
     Run the Gradient descent algorithm
