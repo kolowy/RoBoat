@@ -31,6 +31,18 @@ let predict b x w =
     in b +. loop x w;;
 
 (*
+    Predict all values using the predict function
+
+    param b: bias (float)
+    param x: entry data of each dot (float list list)
+    param w: weights, must be same length as data (float list)
+    returns: each expected value (float list)
+    *)
+let rec predict_y b x w = match x with
+    | [] -> []
+    | e::x -> (predict b e w)::predict_y b x w;;
+
+(*
     Calculates the cost of current prediction
 
     param y: current set of value (float list)
