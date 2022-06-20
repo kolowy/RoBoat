@@ -1,7 +1,3 @@
 (library
-  (name stats)
-  (modules stats))
-
-(library
   (name regression)
   (modules regression))
