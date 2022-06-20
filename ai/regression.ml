@@ -73,6 +73,10 @@ let cost y yp =
     returns: a tuple with the new bias (float) and the new weights (float list)
     *)
 let update_weight x y yp b w lr =
+    let rec dot_p x dy = match x with
+        | [] -> 0.0
+        | e::l -> e *. dy +. dot_p l dy
+    in
     let rec get_vals x y yp = match (x, y, yp) with
         | ([], [], []) -> (0.0, 0.0, 0.0)
         | (_, [], []) | ([], _, []) | ([], [], _) 
@@ -80,7 +84,7 @@ let update_weight x y yp b w lr =
                 invalid_arg "x, y and yp must be of same lenght"
         | (e::x, o::y, op::yp) ->
                 let (s, d, l) = get_vals x y yp and diff = o -. op in
-                (s +. diff, d +. diff *. e, l +. 1.0)
+                (s +. diff, d +. diff *. dot_p e diff, l +. 1.0)
      in let (sum, dot, len) = get_vals x y yp in
      let db = sum *. 2.0 /. len and dw = dot *. 2.0 /. len in
      let rec apply w = match w with
@@ -93,8 +97,16 @@ let update_weight x y yp b w lr =
     
     param x: list of all entries for each data (float list list)
     param y: list of all example values in data (float list)
+    param n: number of entries for each value (int)
     param alpha: learning rate: update step for weight values (float)
     param it: number of iterations (int)
     returns: a tuple the final bias (float) and weights (float list)
     *)
-let gradient_descent x y alpha it = (0.0, [0.0]);;
+let gradient_descent x y n alpha it =
+    let (b, w) = init n in
+    let rec loop it = match it with
+        | 0 -> (b, w)
+        | it -> let (b, w) = loop (it - 1) in
+            let yp = predict_y b x w in
+            update_weight x y yp b w alpha
+    in loop it;;
