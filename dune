@@ -6,7 +6,7 @@
 (executable
   (name debug)
   (modules debug)
-  (libraries interface))
+  (libraries interface regression))
 
 (env
   (dev
