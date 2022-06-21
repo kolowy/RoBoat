@@ -99,6 +99,25 @@ let update_weight x y yp b w lr =
         | (e::w, d::dw) -> (e -. lr *. d)::apply w dw
     in (b -. lr *. db, apply w dw);;
 
+(*
+    Takes a data matrix and return a list of each line
+    param x: data matrix
+    param n: number of entries
+    *)
+let get_entries x n = 
+    let rec init i = match i with
+        | 0 -> []
+        | i -> []::init (i-1)
+    and fill x l = match (x, l) with
+        | ([], _) | (_, []) -> []
+        | (e::x, li::l) -> (e::li)::fill x l
+    and revert l r = match l with
+        | [] -> r
+        | e::l -> revert l (e::r)
+    in let rec loop x = match x with
+        | [] -> init n
+        | e::x -> fill e (loop x)
+    in loop (revert x []);;
 
 (*
     Run the Gradient descent algorithm
