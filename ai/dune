@@ -4,4 +4,5 @@
 
 (library
   (name regression)
-  (modules regression))
+  (modules regression)
+  (libraries stats))
