@@ -30,4 +30,4 @@ let std data = let m = mean data in
     param m: mean of the dataset (float)
     param s: standard deviation of the dataset (float)
     returns: data value scaled (float) *)
-let scale d m s = (d - m) / s;;
+let scale d m s = (d -. m) /. s;;
