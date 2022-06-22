@@ -57,7 +57,7 @@ let cost y yp =
     let rec dot y yp = match (y, yp) with
         | ([], []) -> (0.0, 0.0)
         | ([], _) | (_, []) ->
-                invalid_arg "y and yp must be of same length"
+                invalid_arg "results and predictions must be of same length"
         | (e1::y, e2::yp) ->
                 let (d, l) = dot y yp in
                 ((e1 -. e2) *. (e1 -. e2) +. d, l +. 1.0)
@@ -84,7 +84,7 @@ let update_weight x y yp b w lr =
     let rec get_vals y yp = match (y, yp) with
         | ([], []) -> (0.0, [], 0.0)
         | (_, []) | ([], _) ->
-                invalid_arg "y and yp must be of same length"
+                invalid_arg "results and predictions must be of same length"
         | (o::y, op::yp) ->
                 let (s, d, l) = get_vals y yp and diff = o -. op in
                 (s +. diff, diff::d, l +. 1.0)
