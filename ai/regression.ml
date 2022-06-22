@@ -1,3 +1,5 @@
+open Stats;;
+
 Random.self_init ();;
 
 (*
@@ -118,6 +120,25 @@ let get_entries x n =
     in loop (revert x []);;
 
 (*
+    Scale a list of data
+    param l: the list to scale
+    *)
+let scale_l l =
+    let m = mean l and s = std l in
+    let rec loop l = match l with
+        | [] -> []
+        | e::l -> (scale e m s)::loop l
+    in loop l;;
+
+(*
+    Scale a data matrix
+    param m: the matrix to scale
+    *)
+let rec scale_m m = match m with
+    | [] -> []
+    | e::l -> (scale_l e)::scale_m l;;
+
+(*
     Run the Gradient descent algorithm
     
     param x: list of entry data. each list is a different data (float list list)
@@ -127,6 +148,7 @@ let get_entries x n =
     returns: a tuple the final bias (float) and weights (float list)
     *)
 let gradient_descent x y alpha it =
+    let x = scale_m x and y = scale_l y in
     let rec len l = match l with
         | [] -> 0
         | _::l -> len l + 1 
