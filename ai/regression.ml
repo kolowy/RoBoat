@@ -75,9 +75,9 @@ let cost y yp =
     returns: a tuple with the new bias (float) and the new weights (float list)
     *)
 let update_weight x y yp b w lr =
-    let rec dot_p x dy = match x with
-        | [] -> 0.0
-        | e::l -> e *. dy +. dot_p l dy
+    let rec dot_p x dy = match (x, dy) with
+        | ([], _) | (_, []) -> 0.0
+        | (e::x, d::dy) -> e *. d +. dot_p x dy
     in
     let rec get_vals y yp = match (y, yp) with
         | ([], []) -> (0.0, [], 0.0)
@@ -87,11 +87,9 @@ let update_weight x y yp b w lr =
                 let (s, d, l) = get_vals y yp and diff = o -. op in
                 (s +. diff, diff::d, l +. 1.0)
     in let (sum, diffs, len) = get_vals y yp in
-    let rec get_weights x diffs = match (x, diffs) with
-        | ([], []) -> []
-        | ([], _) | (_, []) ->
-                invalid_arg "x and y must be of same length"
-        | (e::x, d::diffs) -> (dot_p e d *. 2.0 /. len)::get_weights x diffs
+    let rec get_weights x diffs = match x with
+        | [] -> []
+        | e::x -> (dot_p e diffs *. 2.0 /. len)::get_weights x diffs
     in
     let db = sum *. 2.0 /. len and dw = get_weights x diffs in
     let rec apply w dw = match (w, dw) with
